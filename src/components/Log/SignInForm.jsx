@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
+
+const maxAge = 3 * 24 * 60 * 60 * 1000; // 3 days
 
 const SignInForm = () => {
   const [email, setEmail] = useState("");
@@ -20,11 +23,15 @@ const SignInForm = () => {
       },
     })
       .then((res) => {
-        console.log(res);
         if (res.data.errors) {
           emailError.innerHTML = res.data.errors.email;
           passwordError.innerHTML = res.data.errors.password;
         } else {
+          const token = res.data.token;
+          Cookies.set("jwt", token, {
+            maxAge,
+            httpOnly: true,
+          });
           window.location = "/";
         }
       })
